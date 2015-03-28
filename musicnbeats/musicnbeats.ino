@@ -9,7 +9,7 @@ void setup()
 
 #define DARK_GREEN      0x007000
 #define LIGHT_GREEN     0x33ff33
-#define DARK_RED        0x600000
+#define DARK_RED        0x700000
 #define LIGHT_RED       0xff3333
 #define DARK_YELLOW     0x707000
 #define LIGHT_YELLOW    0xffff33
@@ -21,40 +21,36 @@ void drawscreen(int pressed)
   GD.get_inputs();
   GD.Clear();
 
-  GD.PointSize(16 * 20);  // 60-pixel radius points
-  GD.Begin(RECTS);
+  GD.PointSize(16 * 60);  // 60-pixel radius points
+  GD.Begin(POINTS);
   GD.Tag(1);
   if (pressed == 1)
-    GD.ColorRGB(LIGHT_YELLOW);
+    GD.ColorRGB(LIGHT_GREEN);
   else
     GD.ColorRGB(DARK_GREEN);
-  GD.Vertex2ii(50, 50);
-  GD.Vertex2ii(100, 100);
-  
+  GD.Vertex2ii(240 - 70, 136 - 70);
+
   GD.Tag(2);
   if (pressed == 2)
-    GD.ColorRGB(LIGHT_YELLOW);
+    GD.ColorRGB(LIGHT_RED);
   else
-    GD.ColorRGB(DARK_YELLOW);
-  GD.Vertex2ii(100, 100);
-  GD.Vertex2ii(150, 150);
-  
+    GD.ColorRGB(DARK_RED);
+  GD.Vertex2ii(240 + 70, 136 - 70);
+
   GD.Tag(3);
   if (pressed == 3)
     GD.ColorRGB(LIGHT_YELLOW);
   else
-    GD.ColorRGB(DARK_RED);
-  GD.Vertex2ii(150, 150);
-  GD.Vertex2ii(200, 200);
-  
+    GD.ColorRGB(DARK_YELLOW);
+  GD.Vertex2ii(240 - 70, 136 + 70);
+
   GD.Tag(4);
   if (pressed == 4)
-    GD.ColorRGB(LIGHT_YELLOW);
+    GD.ColorRGB(LIGHT_BLUE);
   else
     GD.ColorRGB(DARK_BLUE);
-  GD.Vertex2ii(200, 200);
-  GD.Vertex2ii(250, 250);
-  
+  GD.Vertex2ii(240 + 70, 136 + 70);
+
   GD.swap();
 }
 
@@ -63,10 +59,10 @@ void play(int pressed)
   //                 G   R   Y   B
   //                 E3  A4  C#4 E4
   byte note[] = { 0, 52, 69, 61, 64 };
-  GD.play(HARP, note[pressed]);
+  GD.play(BELL, note[pressed]);
   for (int i = 0; i < 30; i++)
     drawscreen(pressed);
-  for (int i = 0; i < 30; i++)
+  for (int i = 0; i < 15; i++)
     drawscreen(0);
 }
 
@@ -90,7 +86,26 @@ static int random_note()
 
 void loop()
 {
-  int pressed = get_note();
-    return;
-  //}
+  int sequence[100];
+  int length = 0;
+
+  while (1) {
+    delay(500);
+
+    sequence[length++] = random_note();
+
+    for (int i = 0; i < length; i++)
+      play(sequence[i]);
+
+    for (int i = 0; i < length; i++) {
+      int pressed = get_note();
+      if (pressed != sequence[i]) {
+        for (int i = 69; i > 49; i--) {
+          GD.play(BELL, i);
+          delay(50);
+        }
+        return;
+      }
+    }
+  }
 }
