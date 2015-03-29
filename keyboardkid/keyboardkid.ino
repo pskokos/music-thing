@@ -29,7 +29,7 @@ void setup()
 void drawscreen(int pressed)
 {
   GD.get_inputs();
-  //GD.Clear();
+  /
   GD.cmd_gradient(0, 0,   0x0060c0,
                 0, 271, 0xc06000);
   //GD.Clear();              
